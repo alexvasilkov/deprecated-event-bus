@@ -1,4 +1,7 @@
 bin
 target
 gen
-.settings
+.idea
+*.iml
+*.iws
+*.ipr

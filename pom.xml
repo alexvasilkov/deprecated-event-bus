@@ -1,34 +1,72 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.azcltd</groupId>
-  <artifactId>fluffy-events</artifactId>
-  <version>1.0.0</version>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<android.platform>4.1.1.4</android.platform>
-	</properties>
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.google.android</groupId>
-			<artifactId>android</artifactId>
-			<version>${android.platform}</version>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
+    <groupId>com.alexvasilkov</groupId>
+    <artifactId>fluffy-events</artifactId>
+    <version>1.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
-	<build>
-		<sourceDirectory>src</sourceDirectory>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+    <name>Fluffy Events</name>
+    <description>Android EventsBus implementation based on regular BroadcastReceivers</description>
+    <url>https://github.com/alexvasilkov/fluffy-events</url>
+
+    <scm>
+        <url>https://github.com/alexvasilkov/fluffy-events</url>
+        <connection>scm:git:git://github.com/alexvasilkov/fluffy-events.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/alexvasilkov/fluffy-events.git</developerConnection>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/alexvasilkov/fluffy-events/issues</url>
+    </issueManagement>
+
+    <licenses>
+        <license>
+            <name>Apache 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.6</java.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.google.android</groupId>
+            <artifactId>android</artifactId>
+            <version>4.1.1.4</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
