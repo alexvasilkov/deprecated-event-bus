@@ -87,8 +87,6 @@ Available methods:
 
     sendSticky(int eventId, String receiverId, Bundle params);
 
-Note: in order to send sticky events you'll need to declare `android.permission.BROADCAST_STICKY` permission in AndroidManifest.xml file.
-
 #### How to build ####
 
 You need [Maven](http://maven.apache.org/) to build the project. Just run `mvn clean install` from project's root, jar file will be generated into `target` folder.
