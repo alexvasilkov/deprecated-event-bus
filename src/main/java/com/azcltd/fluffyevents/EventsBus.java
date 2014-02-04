@@ -8,6 +8,8 @@ import android.content.IntentFilter.MalformedMimeTypeException;
 import android.os.Bundle;
 import android.util.SparseArray;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public final class EventsBus {
@@ -26,6 +28,7 @@ public final class EventsBus {
     private static Context sAppContext;
     private static String sIntentAction;
     private static final SparseArray<EventsReceiver> sReceiversMap = new SparseArray<EventsReceiver>();
+    private static final Map<String, Intent> sStickyEventsMap = new HashMap<String, Intent>();
 
     public static void init(Context context) {
         if (sAppContext == null) {
@@ -64,6 +67,11 @@ public final class EventsBus {
         }
 
         sReceiversMap.put(++sRegistrationId, receiver);
+
+        for (Intent sticky : sStickyEventsMap.values()) {
+            receiver.onReceive(sAppContext, sticky);
+        }
+
         return sRegistrationId;
     }
 
@@ -90,47 +98,34 @@ public final class EventsBus {
         send(eventId, params, false, receiverId);
     }
 
-    /**
-     * Permission <code>android.permission.BROADCAST_STICKY</code> is required for sticky broadcasts
-     */
     public static void sendSticky(int eventId) {
         send(eventId, null, true, null);
     }
 
-    /**
-     * Permission <code>android.permission.BROADCAST_STICKY</code> is required for sticky broadcasts
-     */
     public static void sendSticky(int eventId, Bundle params) {
         send(eventId, params, true, null);
     }
 
-    /**
-     * Permission <code>android.permission.BROADCAST_STICKY</code> is required for sticky broadcasts
-     */
     public static void sendSticky(int eventId, String receiverId) {
         send(eventId, null, true, receiverId);
     }
 
-    /**
-     * Permission <code>android.permission.BROADCAST_STICKY</code> is required for sticky broadcasts
-     */
     public static void sendSticky(int eventId, String receiverId, Bundle params) {
         send(eventId, params, true, receiverId);
     }
 
-    private static void send(int eventId, Bundle params, boolean sticky, String receiverId) {
+    private synchronized static void send(int eventId, Bundle params, boolean sticky, String receiverId) {
         check();
-        Intent intent = new Intent(sIntentAction).setType(buildMimeType(eventId, receiverId));
+        String mimeType = buildMimeType(eventId, receiverId);
+        Intent intent = new Intent(sIntentAction).setType(mimeType);
 
         if (params != null) intent.putExtras(params);
         intent.putExtra(EXTRA_EVENT_ID, eventId);
         if (receiverId != null) intent.putExtra(EXTRA_RECEIVER_ID, receiverId);
 
-        if (sticky) {
-            sAppContext.sendStickyBroadcast(intent);
-        } else {
-            sAppContext.sendBroadcast(intent);
-        }
+        if (sticky) sStickyEventsMap.put(mimeType, intent);
+
+        sAppContext.sendBroadcast(intent);
     }
 
     /**
@@ -145,18 +140,12 @@ public final class EventsBus {
      * Removes sticky event for given id and given receiver.<br/>
      * Notification with event id = "-eventId" will be send, if sticky event was successfully removed.
      */
-    public static void removeSticky(int eventId, String receiverId) {
+    public synchronized static void removeSticky(int eventId, String receiverId) {
         check();
-        try {
-            String mimeType = buildMimeType(eventId, receiverId);
-            Intent sticky = sAppContext.registerReceiver(null, new IntentFilter(sIntentAction, mimeType));
-            if (sticky != null) {
-                sAppContext.removeStickyBroadcast(sticky);
-                send(-eventId, sticky.getExtras());
-            }
-        } catch (MalformedMimeTypeException e) {
-            e.printStackTrace();
-        }
+
+        String mimeType = buildMimeType(eventId, receiverId);
+        Intent sticky = sStickyEventsMap.remove(mimeType);
+        if (sticky != null) send(-eventId, receiverId, sticky.getExtras());
     }
 
     private static String buildMimeType(int eventId, String receiverId) {
