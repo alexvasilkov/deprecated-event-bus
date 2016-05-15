@@ -1,3 +1,7 @@
+### Deprecated ###
+
+This library is not supported, consider using Handler-based [Events](https://github.com/alexvasilkov/Events).
+
 ### Fluffy Events ###
 
 Simple events bus ([publish–subscribe](http://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern)) implementation based on regular Android BroadcastReceivers mechanism.
